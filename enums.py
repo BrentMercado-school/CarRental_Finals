@@ -12,62 +12,44 @@ class CarBrand(Enum):
     ISUZU = "Isuzu"
     MG = "MG"
 
-class CarModel(Enum):
-    # Toyota
-    VIOS = "Vios"
-    WIGO = "Wigo"
-    INNOVA = "Innova"
-    FORTUNER = "Fortuner"
-    HILUX = "Hilux"
-    AVANZA = "Avanza"
+BRAND_MODELS = {
+    CarBrand.TOYOTA: [
+        "Vios", "Wigo", "Innova", "Fortuner", "Hilux", "Avanza"
+    ],
 
-    # Honda
-    CIVIC = "Civic"
-    CITY = "City"
-    BRIO = "Brio"
-    BRV = "BR-V"
-    CRV = "CR-V"
+    CarBrand.HONDA: [
+        "Civic", "City", "Brio", "BR-V", "CR-V"
+    ],
 
-    # Mitsubishi
-    MIRAGE = "Mirage"
-    XPANDER = "Xpander"
-    MONTERO_SPORT = "Montero Sport"
-    L300 = "L300"
+    CarBrand.MITSUBISHI: [
+        "Mirage", "Xpander", "Montero Sport", "L300"
+    ],
 
-    # Nissan
-    ALMERA = "Almera"
-    TERRA = "Terra"
-    NAVARA = "Navara"
-    URVAN = "Urvan"
+    CarBrand.NISSAN: [
+        "Almera", "Terra", "Navara", "Urvan"
+    ],
 
-    # Ford
-    RANGER = "Ranger"
-    EVEREST = "Everest"
-    ECOSPORT = "EcoSport"
-    MUSTANG = "Mustang"
+    CarBrand.FORD: [
+        "Ranger", "Everest", "EcoSport", "Mustang"
+    ],
 
-    # Hyundai
-    ACCENT = "Accent"
-    REINA = "Reina"
-    TUCSON = "Tucson"
-    STARGAZER = "Stargazer"
+    CarBrand.HYUNDAI: [
+        "Accent", "Reina", "Tucson", "Stargazer"
+    ],
 
-    # Suzuki
-    SWIFT = "Swift"
-    ERTIGA = "Ertiga"
-    DZIRE = "Dzire"
-    JIMNY = "Jimny"
+    CarBrand.SUZUKI: [
+        "Swift", "Ertiga", "Dzire", "Jimny"
+    ],
 
-    # Kia
-    SOLUTO = "Soluto"
-    SPORTAGE = "Sportage"
-    PICANTO = "Picanto"
+    CarBrand.KIA: [
+        "Soluto", "Sportage", "Picanto"
+    ],
 
-    # Isuzu
-    DMAX = "D-Max"
-    MU_X = "mu-X"
-    TRAVIZ = "Traviz"
+    CarBrand.ISUZU: [
+        "D-Max", "mu-X", "Traviz"
+    ],
 
-    # MG
-    MG5 = "MG 5"
-    ZS = "ZS"
+    CarBrand.MG: [
+        "MG 5", "ZS"
+    ]
+}
