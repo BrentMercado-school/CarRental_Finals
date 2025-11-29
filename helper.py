@@ -1,3 +1,6 @@
+import random
+import string
+
 #dito lagay natin mga helper methods natin for example:
 def display_main_menu():
     print("Welcome to our CarRental System")
@@ -14,3 +17,22 @@ def display_customer_menu():
 def display_rental_menu():
     print("Welcome to our Rental Menu")
     print("1. Rent Car\n2. Return Car\n3. Reports\n4. Exit")
+
+def generate_plate_number():
+    letters = ''.join(random.choices(string.ascii_uppercase, k=3))
+    numbers = ''.join(random.choices(string.digits, k=3))
+    return f"{letters} {numbers}"
+
+def get_non_empty_input(prompt, error_msg):
+    user_input = input(f"{prompt}: ").strip()
+    while user_input == "":
+        print(f"\n{error_msg}")
+        user_input = input(f"{prompt}: ").strip()
+    return user_input
+
+def get_valid_integer(prompt, error_msg):
+    while True:
+        user_input = input(f"{prompt}: ").strip()
+        if user_input.isdigit():
+            return int(user_input)
+        print(f"\n{error_msg}")

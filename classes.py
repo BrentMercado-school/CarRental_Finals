@@ -1,5 +1,7 @@
 # CAR
 from enums import *
+from helper import *
+
 class Car:
     def __init__(self, plate_number, brand, model, rate_per_day, availability):
         self.plate_number = plate_number
@@ -23,7 +25,6 @@ class CarManagement:
     # ADD NEW CAR
     def add_car(self):
         pass
-
     # GET CAR BY PLATE NO.
     def get_car_by_plate_number(self):
         pass
