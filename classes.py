@@ -1,16 +1,20 @@
 # CAR
+from enums import *
 class Car:
-    # Attributes: Plate Number (primary key), Brand, Model, Rate per Day, Availability
     def __init__(self, plate_number, brand, model, rate_per_day, availability):
-        pass
+        self.plate_number = plate_number
+        self.brand = brand
+        self.model = model
+        self.rate_per_day = rate_per_day
+        self.availability = availability
 
-    # You can add other car related functions here or any methods na related sa car class natin
-    # Example lang yang mga nilagay ko
     def display_car_details(self):
-        pass
+        print(f"Plate Number: {self.plate_number} | Brand: {self.brand} | Model: {self.model}"
+              f"Rate: {self.rate_per_day} | Availability: {self.availability}")
 
     def is_available(self):
         pass
+
 class CarManagement:
     def __init__(self):
         self.cars = []

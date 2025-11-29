@@ -14,4 +14,3 @@ def display_customer_menu():
 def display_rental_menu():
     print("Welcome to our Rental Menu")
     print("1. Rent Car\n2. Return Car\n3. Reports\n4. Exit")
-
