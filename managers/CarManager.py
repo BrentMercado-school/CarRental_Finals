@@ -1,3 +1,5 @@
+import os.path
+
 from utils.Enums import *
 from utils.Helper import *
 from classes.Car import Car
@@ -17,7 +19,7 @@ class CarManager:
 
         brand_input = get_non_empty_input(
             "Enter car brand",
-            "Car brand should not be blank."
+            "Car brand should not be empty."
         ).upper()
 
         try:
@@ -52,44 +54,51 @@ class CarManager:
         for car in self.cars:
             if car.plate_number == plate_number:
                 return car
-        print(f"No car with plate number {plate_number}")
         return None
 
     def remove_car(self):
-        plate_number = get_non_empty_input("Enter plate number", "Invalid input")
+        plate_number = get_non_empty_input("Enter plate number", "Input cannot be empty.")
         car = self.get_car_by_plate_number(plate_number)
 
+        if car is None:
+            print("Car not found.")
+            return
+
         self.cars.remove(car)
-        print(f"Successfully removed car {plate_number} from car management.")
+        print(f"Successfully removed car {plate_number}.")
 
     def display_cars(self):
+        if len(self.cars) == 0:
+            print("Car list is empty.")
+            return
         for car in self.cars:
-            car.display_car_details()
+            car.display_details()
 
     def add_test_car(self):
         self.cars.append(Car("a", CarBrand.TOYOTA, "Vios", 1500, True))
-        self.cars.append(Car("aa", CarBrand.TOYOTA, "Innova", 1500, True))
+        self.cars.append(Car("aa", CarBrand.TOYOTA, "Vios", 1500, True))
         self.cars.append(Car("BBB 222", CarBrand.HONDA, "Civic", 1800, True))
         self.cars.append(Car("CCC 333", CarBrand.MITSUBISHI, "Xpander", 2000, False))
         self.cars.append(Car("DDD 444", CarBrand.NISSAN, "Terra", 2500, True))
 
     def update_car(self):
         plate_number = get_non_empty_input("Enter plate number", "Invalid input")
-        car = self.get_car_by_plate_number(plate_number)
+        founded_car = self.get_car_by_plate_number(plate_number)
 
-        if car is None:
+        if founded_car is None:
+            print("Car not found.")
             return
 
-        car.display_car_details()
-        print(f"Press ENTER to keep current details of {car.plate_number}.")
+        founded_car.display_car_details()
+        print(f"Press ENTER to keep current details of {founded_car.plate_number}.")
 
         for brand in CarBrand:
             print(f"- {brand.value}")
 
-        brand_input = input("Enter new car brand: ").strip().upper()
+        brand_input = input(f"Enter new car brand (current: {founded_car.brand} ").strip().upper()
 
         if brand_input == "":
-            new_brand = car.brand
+            new_brand = founded_car.brand
         else:
             try:
                 new_brand = CarBrand[brand_input]
@@ -115,7 +124,7 @@ class CarManager:
         new_rate_input = input("Enter new car rate: ").strip()
 
         if new_rate_input == "":
-            new_rate = car.rate_per_day
+            new_rate = founded_car.rate_per_day
         else:
             try:
                 new_rate = int(new_rate_input)
@@ -124,34 +133,95 @@ class CarManager:
                 return
 
 
-        car.brand = new_brand
-        car.model = new_model
-        car.rate_per_day = new_rate
+        founded_car.brand = new_brand
+        founded_car.model = new_model
+        founded_car.rate_per_day = new_rate
 
         print("Successfully updated car details.")
 
-    # Search cars by brand, model, or availability
-    # not done
-    def search_cars(self):
-        print("1 - Brand | 2 - Model | 3 - Availability | 4 - low to high | 5 - high to low")
-
+    def search_by_brand(self):
         brand_input = input("Enter car brand: ").strip().upper()
 
         try:
             selected_brand = CarBrand[brand_input]
         except KeyError:
-            print("Invalid brand. Car not added.")
+            print(f"No brand {brand_input} found")
             return
 
         filtered_cars = [car for car in self.cars if car.brand == selected_brand]
-
+        if len(filtered_cars) == 0:
+            print(f"No cars yet in brand {brand_input}.")
+            return
+        print(f"Found {len(filtered_cars)} car(s) in brand {brand_input}.")
         for car in filtered_cars:
-            car.display_car_details()
+            car.display_details()
+
+    def search_by_model(self):
+        model_input = input("Enter car model: ").strip().title()
+
+        found = False
+        for brand, models in BRAND_MODELS.items():
+            if model_input in models:
+                found = True
+                break
+        if not found:
+            print(f"No cars yet in model {model_input}.")
+            return
+
+        filtered_cars = [car for car in self.cars if car.model == model_input]
+        if len(filtered_cars) == 0:
+            print(f"No cars yet in model {model_input}.")
+            return
+        print(f"Found {len(filtered_cars)} car(s) in model {model_input}.")
+        for car in filtered_cars:
+            car.display_details()
+
+    def search_by_availability(self):
+        available_cars = [car for car in self.cars if car.availability == True]
+        unavailable_cars = [car for car in self.cars if car.availability == False]
+        print("-- Available cars --")
+        for car in available_cars:
+            car.display_details()
+        print("\n-- Unavailable cars --")
+        for car in unavailable_cars:
+            car.display_details()
 
     # SAVE CARS TO FILE
-    def save_file(self):
-        pass
+    def save_file(self, filename):
+        with open(filename, "w") as file:
+            for car in self.cars:
+                file.write(car.to_file_format())
+
+        print(f"Saved {len(self.cars)} car(s) to {filename}.")
 
     # LOAD CARS FROM FILE
-    def load_file(self):
-        pass
+    def load_file(self, filename):
+        if not os.path.exists(filename):
+            print("No existing file found. Starting with an empty list.\n")
+            return
+
+        with open(filename, "r") as file:
+            lines = file.readlines()
+
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+
+                parts = line.split(",")
+                if len(parts) == 5:
+                    plate_number = parts[0]
+                    brand_str = parts[1]
+                    model = parts[2]
+                    rate_per_day = parts[3]
+                    availability = parts[4] == "True"
+
+                    try:
+                        brand = CarBrand[brand_str.upper()]
+                    except KeyError:
+                        print(f"Unknown brand '{brand_str}' in file. Skipping this car.")
+                        continue
+
+                    self.cars.append(Car(plate_number, brand, model, rate_per_day, availability))
+
+        print(f"Loaded {len(self.cars)} car(s) from {filename}\n")

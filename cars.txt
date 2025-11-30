@@ -1,0 +1,3 @@
+KOD 200,Honda,Civic,1000.0,True
+WUE 664,Toyota,Vios,100,True
+HXZ 032,Ford,Ranger,1000,True
