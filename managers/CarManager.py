@@ -1,9 +1,7 @@
 import os.path
-
 from utils.Enums import *
 from utils.Helper import *
 from classes.Car import Car
-
 
 class CarManager:
     def __init__(self):
@@ -186,7 +184,6 @@ class CarManager:
         for car in unavailable_cars:
             car.display_details()
 
-    # SAVE CARS TO FILE
     def save_file(self, filename):
         with open(filename, "w") as file:
             for car in self.cars:
@@ -194,11 +191,10 @@ class CarManager:
 
         print(f"Saved {len(self.cars)} car(s) to {filename}.")
 
-    # LOAD CARS FROM FILE
     def load_file(self, filename):
         if not os.path.exists(filename):
             print("No existing file found. Starting with an empty list.\n")
-            return
+            return []
 
         with open(filename, "r") as file:
             lines = file.readlines()
