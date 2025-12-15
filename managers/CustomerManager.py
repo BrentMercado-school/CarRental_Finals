@@ -1,3 +1,11 @@
+import os
+
+from classes.Car import Car
+from classes.Customer import Customer
+from utils.Enums import CarBrand
+from utils.Helper import get_non_empty_input, get_valid_integer
+
+
 class CustomerManagement:
     def __init__(self):
         self.customers = []
@@ -5,32 +13,129 @@ class CustomerManagement:
     # mga main functions na naiisip ko pero pwede niyo bawasan or dagdagan
     # Add a new customer
     def add_customer(self):
-        pass
+        id = 0
+        name = get_non_empty_input("Enter customer name", "'Customer Name' should not be empty")
+        contact_number = get_valid_integer("Enter contact number", "Please enter a valid whole number")
+        rented_cars = []
 
-    # Get customer by ID
-    def get_customer_by_id(self):
-        pass
+        self.customers.append(Customer(id, name, contact_number, rented_cars))
 
-    # Remove a customer
+        print(f"Successfully added customer '{name}'")
+
+    def get_customer_by_id(self, customer_id):
+        for customer in self.customers:
+            if customer.customer_id == customer_id:
+                return customer
+        return None
+
     def remove_customer(self):
-        pass
+        customer_id = get_valid_integer("Enter customer ID", "Please enter a valid customer ID")
+        customer = self.get_customer_by_id(customer_id)
 
-    # Display all customers
+        if customer is None:
+            print("Customer not found")
+            return
+
+        if customer.rented_cars:
+            print("Cannot remove customer with active rentals.")
+            return
+
+        self.customers.remove(customer)
+        print(f"Successfully removed customer '{customer.name}'")
+
     def display_customers(self):
-        pass
+        if len(self.customers) == 0:
+            print("Customer list is empty")
+            return
+        for customer in self.customers:
+            customer.display_customer_details()
 
-    # Update customer details
     def update_customer(self):
-        pass
+        customer_id = get_valid_integer("Enter customer ID", "Please enter a valid customer ID")
+        customer = self.get_customer_by_id(customer_id)
 
-    # Search customers by name
+        if customer is None:
+            print("Customer not found")
+            return
+
+        print(f"Press ENTER to keep current details of {customer.name}.")
+
+        name_input = input(f"Enter new customer name (current: {customer.name}): ").strip()
+        if name_input == "":
+            new_name = customer.name
+        else:
+            new_name = name_input
+
+        contact_input = input(f"Enter new contact number (current: {customer.contact_number}): ").strip()
+
+        if contact_input == "":
+            new_contact_number = customer.contact_number
+        else:
+            new_contact_number = int(contact_input)
+
+        customer.name = new_name
+        customer.contact_number = new_contact_number
+        print("Successfully updated customer details.")
+
     def search_customer(self):
-        pass
+        customer_name = input("Enter customer name: ").strip()
+        founded_customers = []
+        for customer in self.customers:
+            if customer_name.lower() in customer.name.lower():
+                founded_customers.append(customer)
 
-    # Save customers to file
-    def save_file(self):
-        pass
+        if len(founded_customers) == 0:
+            print("Customer not found")
+            return
 
-    # Load customers from file
-    def load_file(self):
-        pass
+        print(f"Founded {len(founded_customers)} customers with name '{customer_name}'.")
+        for customer in founded_customers:
+            customer.display_customer_details()
+
+    def save_file(self, filename):
+        with open(filename, "w") as file:
+            for customer in self.customers:
+                file.write(customer.to_file_format())
+
+        print(f"Saved {len(self.customers)} customer(s) to {filename}.")
+
+    def load_file(self, filename):
+        self.customers = []
+
+        try:
+            if not os.path.exists(filename):
+                print("No existing file found. Starting with an empty list.\n")
+                return []
+
+            with open(filename, "r") as file:
+                for line in file:
+                    line = line.strip()
+
+                    if line == "":
+                        continue
+
+                    parts = line.split(",")
+
+                    customer_id = int(parts[0])
+                    name = parts[1]
+                    contact_number = parts[2]
+
+                    if len(parts) > 3 and parts[3] != "":
+                        rented_cars = parts[3].split("|")
+                    else:
+                        rented_cars = []
+
+                    self.customers.append(
+                        Customer(customer_id, name, contact_number, rented_cars)
+                    )
+
+            print(f"Loaded {len(self.customers)} customer(s) from {filename}.")
+
+        except FileNotFoundError:
+            print(f"{filename} not found. A new file will be created on save.")
+
+    def add_temp_customer(self):
+        self.customers.append(Customer(1, "Brent", 121211,
+                                       ["AAA 111"]))
+
+

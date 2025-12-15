@@ -3,8 +3,6 @@ from managers.CarManager import CarManager
 from utils.Helper import display_cars_menu, display_main_menu, search_car_prompt, display_customer_menu, \
     display_rental_menu, display_report_menu
 
-print("hello -JC")
-
 #filenames
 car_filename = "cars.txt"
 customer_filename = "customers.txt"

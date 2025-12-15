@@ -27,6 +27,9 @@ def generate_plate_number():
     numbers = ''.join(random.choices(string.digits, k=3))
     return f"{letters} {numbers}"
 
+def generate_random_customer_id():
+    customer_number = generate_plate_number()
+
 def get_non_empty_input(prompt, error_msg):
     user_input = input(f"{prompt}: ").strip()
     while user_input == "":

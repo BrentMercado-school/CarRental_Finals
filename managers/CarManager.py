@@ -221,3 +221,4 @@ class CarManager:
                     self.cars.append(Car(plate_number, brand, model, rate_per_day, availability))
 
         print(f"Loaded {len(self.cars)} car(s) from {filename}\n")
+
