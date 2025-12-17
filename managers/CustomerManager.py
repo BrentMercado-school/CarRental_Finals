@@ -1,24 +1,21 @@
 import os
 
-from classes.Car import Car
 from classes.Customer import Customer
-from utils.Enums import CarBrand
 from utils.Helper import get_non_empty_input, get_valid_integer
 
 
 class CustomerManagement:
     def __init__(self):
         self.customers = []
+        self.next_customer_id = 1
 
-    # mga main functions na naiisip ko pero pwede niyo bawasan or dagdagan
-    # Add a new customer
     def add_customer(self):
-        id = 0
         name = get_non_empty_input("Enter customer name", "'Customer Name' should not be empty")
         contact_number = get_valid_integer("Enter contact number", "Please enter a valid whole number")
         rented_cars = []
 
-        self.customers.append(Customer(id, name, contact_number, rented_cars))
+        self.customers.append(Customer(self.next_customer_id, name, contact_number, rented_cars))
+        self.next_customer_id += 1
 
         print(f"Successfully added customer '{name}'")
 
@@ -71,7 +68,11 @@ class CustomerManagement:
         if contact_input == "":
             new_contact_number = customer.contact_number
         else:
-            new_contact_number = int(contact_input)
+            try:
+                new_contact_number = int(contact_input)
+            except ValueError:
+                print("Invalid contact number.")
+                return
 
         customer.name = new_name
         customer.contact_number = new_contact_number
@@ -105,7 +106,6 @@ class CustomerManagement:
         try:
             if not os.path.exists(filename):
                 print("No existing file found. Starting with an empty list.\n")
-                return []
 
             with open(filename, "r") as file:
                 for line in file:
@@ -118,7 +118,7 @@ class CustomerManagement:
 
                     customer_id = int(parts[0])
                     name = parts[1]
-                    contact_number = parts[2]
+                    contact_number = int(parts[2])
 
                     if len(parts) > 3 and parts[3] != "":
                         rented_cars = parts[3].split("|")
@@ -129,6 +129,10 @@ class CustomerManagement:
                         Customer(customer_id, name, contact_number, rented_cars)
                     )
 
+            if self.customers:
+                self.next_customer_id = max(c.customer_id for c in self.customers) + 1
+            else:
+                self.next_customer_id = 1
             print(f"Loaded {len(self.customers)} customer(s) from {filename}.")
 
         except FileNotFoundError:
@@ -136,6 +140,6 @@ class CustomerManagement:
 
     def add_temp_customer(self):
         self.customers.append(Customer(1, "Brent", 121211,
-                                       ["AAA 111"]))
+                                       []))
 
 
