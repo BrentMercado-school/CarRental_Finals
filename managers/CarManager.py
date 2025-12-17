@@ -18,11 +18,11 @@ class CarManager:
         brand_input = get_non_empty_input(
             "Enter car brand",
             "Car brand should not be empty."
-        ).upper()
+        )
 
-        try:
-            car_brand = CarBrand[brand_input]
-        except KeyError:
+        car_brand = get_car_brand_from_input(brand_input)
+
+        if car_brand is None:
             print("Invalid brand. Car not added.")
             return
 
@@ -87,22 +87,19 @@ class CarManager:
             print("Car not found.")
             return
 
-        founded_car.display_car_details()
+        founded_car.display_details()
         print(f"Press ENTER to keep current details of {founded_car.plate_number}.")
 
         for brand in CarBrand:
             print(f"- {brand.value}")
 
-        brand_input = input(f"Enter new car brand (current: {founded_car.brand} ").strip().upper()
+        brand_input = input(f"Enter new car brand (current: {founded_car.brand.value} ").strip().upper()
 
         if brand_input == "":
             new_brand = founded_car.brand
         else:
-            try:
-                new_brand = CarBrand[brand_input]
-            except KeyError:
-                print("Invalid brand. Car not added.")
-                return
+            new_brand = get_car_brand_from_input(brand_input)
+
 
         print(f"\nAvailable Models for {new_brand.value}:")
         for brand in BRAND_MODELS[new_brand]:
@@ -138,11 +135,11 @@ class CarManager:
         print("Successfully updated car details.")
 
     def search_by_brand(self):
-        brand_input = input("Enter car brand: ").strip().upper()
+        brand_input = input("Enter car brand: ").strip()
 
-        try:
-            selected_brand = CarBrand[brand_input]
-        except KeyError:
+        selected_brand = get_car_brand_from_input(brand_input)
+
+        if selected_brand is None:
             print(f"No brand {brand_input} found")
             return
 
@@ -175,8 +172,8 @@ class CarManager:
             car.display_details()
 
     def search_by_availability(self):
-        available_cars = [car for car in self.cars if car.availability == True]
-        unavailable_cars = [car for car in self.cars if car.availability == False]
+        available_cars = [car for car in self.cars if car.is_available()]
+        unavailable_cars = [car for car in self.cars if not car.is_available()]
         print("-- Available cars --")
         for car in available_cars:
             car.display_details()
@@ -194,7 +191,7 @@ class CarManager:
     def load_file(self, filename):
         if not os.path.exists(filename):
             print("No existing file found. Starting with an empty list.\n")
-            return []
+            return
 
         with open(filename, "r") as file:
             lines = file.readlines()
@@ -209,7 +206,7 @@ class CarManager:
                     plate_number = parts[0]
                     brand_str = parts[1]
                     model = parts[2]
-                    rate_per_day = parts[3]
+                    rate_per_day = int(parts[3])
                     availability = parts[4] == "True"
 
                     try:
