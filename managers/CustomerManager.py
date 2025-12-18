@@ -1,4 +1,5 @@
 import os
+from tabulate import tabulate
 
 from classes.Customer import Customer
 from utils.Helper import get_non_empty_input, get_valid_integer
@@ -10,14 +11,35 @@ class CustomerManagement:
         self.next_customer_id = 1
 
     def add_customer(self):
-        name = get_non_empty_input("Enter customer name", "'Customer Name' should not be empty")
-        contact_number = get_valid_integer("Enter contact number", "Please enter a valid whole number")
+        print("\n" + "=" * 45)
+        print("        ADD NEW CUSTOMER")
+        print("=" * 45)
+
+        name = get_non_empty_input(
+            "Enter customer name",
+            "Customer name should not be empty."
+        )
+
+        contact_number = get_valid_integer(
+            "Enter contact number",
+            "Please enter a valid whole number."
+        )
+
         rented_cars = []
 
-        self.customers.append(Customer(self.next_customer_id, name, contact_number, rented_cars))
-        self.next_customer_id += 1
+        self.customers.append(
+            Customer(self.next_customer_id, name, contact_number, rented_cars)
+        )
+        print("\n" + "=" * 45)
+        print("Customer added successfully!")
+        print("-" * 45)
+        print(f"Customer ID    : {self.next_customer_id}")
+        print(f"Name           : {name}")
+        print(f"Contact Number : {contact_number}")
+        print("=" * 45)
 
-        print(f"Successfully added customer '{name}'")
+        self.next_customer_id += 1
+        input("Press enter to continue...")
 
     def get_customer_by_id(self, customer_id):
         for customer in self.customers:
@@ -26,72 +48,158 @@ class CustomerManagement:
         return None
 
     def remove_customer(self):
-        customer_id = get_valid_integer("Enter customer ID", "Please enter a valid customer ID")
+        if len(self.customers) == 0:
+            print("Customer list is empty.")
+            return
+
+        print("\n" + "=" * 45)
+        print("        REMOVE CUSTOMER")
+        print("=" * 45)
+
+        customer_id = get_valid_integer(
+            "Enter customer ID to remove",
+            "Please enter a valid customer ID."
+        )
+
         customer = self.get_customer_by_id(customer_id)
 
         if customer is None:
-            print("Customer not found")
+            print("\nCustomer not found.")
             return
 
         if customer.rented_cars:
-            print("Cannot remove customer with active rentals.")
+            print("\nCannot remove customer with active rentals.")
+            print(f"Customer has {len(customer.rented_cars)} rented car(s).")
+            return
+
+        print("\nCUSTOMER DETAILS")
+        print("-" * 45)
+        print(f"Customer ID    : {customer.customer_id}")
+        print(f"Name           : {customer.name}")
+        print(f"Contact Number : {customer.contact_number}")
+
+        confirm = input(f"\nAre you sure you want to remove this customer? (Y/N): ").strip().upper()
+        if confirm != "Y":
+            print("\nCustomer removal canceled.")
             return
 
         self.customers.remove(customer)
-        print(f"Successfully removed customer '{customer.name}'")
+
+        print("\n" + "=" * 45)
+        print(f"Customer '{customer.name}' removed successfully.")
+        print("=" * 45)
 
     def display_customers(self):
         if len(self.customers) == 0:
-            print("Customer list is empty")
+            print("Customer list is empty.")
             return
+
+        data = []
+
         for customer in self.customers:
-            customer.display_customer_details()
+            data.append({
+                "Customer ID": customer.customer_id,
+                "Name": customer.name,
+                "Contact Number": customer.contact_number,
+                "Rented Cars": len(customer.rented_cars)
+            })
+
+        print("CUSTOMER LIST")
+
+        table = tabulate(data, headers="keys", tablefmt="pipe")
+        print(table)
+
+        input("Press enter to continue...")
 
     def update_customer(self):
-        customer_id = get_valid_integer("Enter customer ID", "Please enter a valid customer ID")
+        if len(self.customers) == 0:
+            print("Customer list is empty.")
+            return
+
+        print("\n" + "=" * 45)
+        print("        UPDATE CUSTOMER DETAILS")
+        print("=" * 45)
+
+        customer_id = get_valid_integer(
+            "Enter customer ID to update",
+            "Please enter a valid customer ID."
+        )
+
         customer = self.get_customer_by_id(customer_id)
 
         if customer is None:
-            print("Customer not found")
+            print("\nCustomer not found.")
             return
 
-        print(f"Press ENTER to keep current details of {customer.name}.")
+        print("\nCURRENT CUSTOMER DETAILS")
+        print("-" * 45)
+        print(f"Customer ID    : {customer.customer_id}")
+        print(f"Name           : {customer.name}")
+        print(f"Contact Number : {customer.contact_number}")
 
-        name_input = input(f"Enter new customer name (current: {customer.name}): ").strip()
-        if name_input == "":
-            new_name = customer.name
-        else:
-            new_name = name_input
+        print("\nPress ENTER to keep the current value.")
 
-        contact_input = input(f"Enter new contact number (current: {customer.contact_number}): ").strip()
+        name_input = input(f"\nEnter new customer name (current: {customer.name}): ").strip()
+        new_name = customer.name if name_input == "" else name_input
 
+        contact_input = input(f"Enter new contact number (current: {customer.contact_number}): ")
         if contact_input == "":
             new_contact_number = customer.contact_number
         else:
             try:
                 new_contact_number = int(contact_input)
             except ValueError:
-                print("Invalid contact number.")
+                print("\nInvalid contact number. Update canceled.")
                 return
 
         customer.name = new_name
         customer.contact_number = new_contact_number
-        print("Successfully updated customer details.")
+
+        print("\n" + "=" * 45)
+        print("Customer details updated successfully!")
+        print("-" * 45)
+        print(f"Customer ID    : {customer.customer_id}")
+        print(f"Name           : {customer.name}")
+        print(f"Contact Number : {customer.contact_number}")
+        print("=" * 45)
+
+        input("Press enter to continue...")
 
     def search_customer(self):
-        customer_name = input("Enter customer name: ").strip()
-        founded_customers = []
-        for customer in self.customers:
-            if customer_name.lower() in customer.name.lower():
-                founded_customers.append(customer)
+        print("\n" + "=" * 45)
+        print("        SEARCH CUSTOMERS")
+        print("=" * 45)
 
-        if len(founded_customers) == 0:
-            print("Customer not found")
+        if len(self.customers) == 0:
+            print("\nCustomer list is empty.")
             return
 
-        print(f"Founded {len(founded_customers)} customers with name '{customer_name}'.")
-        for customer in founded_customers:
-            customer.display_customer_details()
+        customer_name = input("\nEnter customer name to search: ").strip()
+
+        found_customers = [
+            customer for customer in self.customers
+            if customer_name.lower() in customer.name.lower()
+        ]
+
+        if not found_customers:
+            print(f"\nNo customers found with name '{customer_name}'.")
+            return
+
+        data = []
+        for customer in found_customers:
+            data.append({
+                "Customer ID": customer.customer_id,
+                "Name": customer.name,
+                "Contact Number": customer.contact_number,
+                "Rented Cars": len(customer.rented_cars)
+            })
+
+        print("\n" + "=" * 45)
+        print(f"Found {len(found_customers)} customer(s) with name '{customer_name}'")
+        print("=" * 45)
+        print(tabulate(data, headers="keys", tablefmt="pipe"))
+
+        input("Press enter to continue...")
 
     def save_file(self, filename):
         with open(filename, "w") as file:

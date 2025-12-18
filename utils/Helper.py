@@ -15,7 +15,7 @@ def display_cars_menu():
     print("1. Add Car\n2. View All Cars\n3. Edit Car\n4. Remove Car\n5. Search Cars\n6. Save\n7. Back")
 
 def display_customer_menu():
-    print("Manage Customers")
+    print("\n--- Manage Customers ---")
     print("1. Add Customer\n2. View All Customer\n3. Edit Customer\n4. Remove Customer\n5. Search Customer\n6. Save\n7. Back")
 
 def display_rental_menu():
