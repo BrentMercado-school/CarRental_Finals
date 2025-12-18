@@ -94,7 +94,7 @@ while True:
             elif rental_menu_choice == "4":
                 rental_manager.display_rentals_by_customer()
             elif rental_menu_choice == "5":
-                rental_manager.save_file(rental_filename)
+                rental_manager.save_file(rental_filename, customer_manager, customer_filename, car_manager, car_filename)
             elif rental_menu_choice == "6":
                 break
             else:
@@ -106,12 +106,10 @@ while True:
             report_menu_choice = input("Enter your choice: ")
 
             if report_menu_choice == "1":
-                car_manager.search_by_availability()
+                car_manager.car_report()
             elif report_menu_choice == "2":
-                rental_manager.search_by_rented_cars()
-            elif report_menu_choice == "3":
                 rental_manager.search_by_returned_cars()
-            elif report_menu_choice == "4":
+            elif report_menu_choice == "3":
                 break
             else:
                 print("Invalid choice")

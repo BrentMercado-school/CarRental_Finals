@@ -206,7 +206,12 @@ class CustomerManagement:
             for customer in self.customers:
                 file.write(customer.to_file_format())
 
-        print(f"Saved {len(self.customers)} customer(s) to {filename}.")
+        print(f"Saved {len(self.customers)} customer(s) to {filename}.\n")
+
+    def save_file_rented(self, filename):
+        with open(filename, "w") as file:
+            for customer in self.customers:
+                file.write(customer.to_file_format())
 
     def load_file(self, filename):
         self.customers = []

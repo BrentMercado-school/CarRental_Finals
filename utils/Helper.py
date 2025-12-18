@@ -1,11 +1,8 @@
 from datetime import datetime
 import random
 import string
-
 from utils.Enums import CarBrand
 
-
-#dito lagay natin mga helper methods natin for example:
 def display_main_menu():
     print("MAIN MENU")
     print("1. Manage Cars\n2. Manage Customers\n3. Rental Transactions\n4. Reports\n5. Exit")
@@ -19,12 +16,12 @@ def display_customer_menu():
     print("1. Add Customer\n2. View All Customer\n3. Edit Customer\n4. Remove Customer\n5. Search Customer\n6. Save\n7. Back")
 
 def display_rental_menu():
-    print("Rental  Transactions")
+    print("\n--- Rental  Transactions ---")
     print("1. Rent Car\n2. Return Car\n3. View All Rentals\n4. View Rentals  by  Customer\n5. Save\n6. Back")
 
 def display_report_menu():
-    print("Reports")
-    print("1. Available Cars  Report\n2. Rented Cars Report\n3. Returned Car Report\n4. Back")
+    print("\n--- Reports ---")
+    print("1. View Cars Report\n2. View All Returned Car\n3. Back")
 
 def generate_plate_number():
     letters = ''.join(random.choices(string.ascii_uppercase, k=3))

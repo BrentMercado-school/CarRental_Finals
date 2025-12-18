@@ -352,12 +352,59 @@ class CarManager:
 
             input("Press Enter to continue...")
 
+    def car_report(self):
+        available_cars = [car for car in self.cars if car.is_available()]
+        unavailable_cars = [car for car in self.cars if not car.is_available()]
+
+        print("\nAVAILABLE CARS")
+        print("-" * 45)
+
+        if not available_cars:
+            print("No available cars.")
+        else:
+            available_data = []
+            for car in available_cars:
+                available_data.append({
+                    "Plate Number": car.plate_number,
+                    "Brand": car.brand.value,
+                    "Model": car.model,
+                    "Rate / Day (₱)": car.rate_per_day,
+                    "Status": "Available"
+                })
+
+            print(tabulate(available_data, headers="keys", tablefmt="pipe"))
+
+        print("\nUNAVAILABLE (RENTED) CARS")
+        print("-" * 45)
+
+        if not unavailable_cars:
+            print("No rented cars.")
+        else:
+            unavailable_data = []
+            for car in unavailable_cars:
+                unavailable_data.append({
+                    "Plate Number": car.plate_number,
+                    "Brand": car.brand.value,
+                    "Model": car.model,
+                    "Rate / Day (₱)": car.rate_per_day,
+                    "Status": "Rented"
+                })
+
+            print(tabulate(unavailable_data, headers="keys", tablefmt="pipe"))
+
+            input("Press Enter to continue...")
+
     def save_file(self, filename):
         with open(filename, "w") as file:
             for car in self.cars:
                 file.write(car.to_file_format())
 
         print(f"Saved {len(self.cars)} car(s) to {filename}.")
+
+    def save_file_rented(self, filename):
+        with open(filename, "w") as file:
+            for car in self.cars:
+                file.write(car.to_file_format())
 
     def load_file(self, filename):
 
