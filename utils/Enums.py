@@ -53,3 +53,7 @@ BRAND_MODELS = {
         "MG 5", "ZS"
     ]
 }
+
+class RentalStatus(Enum):
+    ONGOING = "Ongoing"
+    RETURNED = "Returned"
