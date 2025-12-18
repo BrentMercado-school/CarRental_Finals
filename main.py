@@ -117,6 +117,10 @@ while True:
                 print("Invalid choice")
                 continue
 
+        elif main_menu_choice == "5":
+            print("Thank you for using this program")
+            exit()
+
 
 
 

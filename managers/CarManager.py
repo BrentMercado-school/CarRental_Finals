@@ -2,51 +2,76 @@ import os.path
 from utils.Enums import *
 from utils.Helper import *
 from classes.Car import Car
+from tabulate import tabulate
 
 class CarManager:
     def __init__(self):
         self.cars = []
 
     def add_car(self):
-        plate_number = generate_plate_number()
-        print(f"Automatically generated plate number: {plate_number}")
+        print("\n" + "=" * 29)
+        print("        ADD NEW CAR")
+        print("=" * 29)
 
-        print(f"\nAvailable Brands:")
+        plate_number = generate_plate_number()
+        print(f"\nPlate Number Generated: {plate_number}")
+
+        print("\n1. Select Car Brand")
+        print("-" * 25)
         for brand in CarBrand:
-            print(f"- {brand.value}")
+            print(f"• {brand.value}")
 
         brand_input = get_non_empty_input(
-            "Enter car brand",
+            "\nEnter car brand",
             "Car brand should not be empty."
         )
 
         car_brand = get_car_brand_from_input(brand_input)
 
         if car_brand is None:
-            print("Invalid brand. Car not added.")
+            print("\n[ERROR] Invalid brand selected. Car not added.")
             return
 
-        print(f"\nAvailable Models for {car_brand.value}:")
+        print("\n2. Select Car Model")
+        print("-" * 25)
+        print(f"Available models for {car_brand.value}:")
         for model in BRAND_MODELS[car_brand]:
-            print(f"- {model}")
+            print(f"• {model}")
 
         model_input = get_non_empty_input(
-            "Enter car model",
+            "\nEnter car model",
             "Car model should not be blank."
         ).title()
 
         if model_input not in BRAND_MODELS[car_brand]:
-            print("Invalid model for selected brand!")
+            print("\n[ERROR] Invalid model for the selected brand.")
             return
 
-        car_model = model_input
-
-        car_rate = get_valid_integer("Enter car rate", "Invalid input. Try again.")
+        print("\n3. Set Rental Rate")
+        print("-" * 25)
+        car_rate = get_valid_integer(
+            "Enter car rate per day",
+            "Invalid input. Please enter a valid number."
+        )
 
         availability = True
+        self.cars.append(Car(
+            plate_number,
+            car_brand,
+            model_input,
+            car_rate,
+            availability
+        ))
 
-        self.cars.append(Car(plate_number, car_brand, car_model, car_rate, availability))
-        print(f"Successfully added car {plate_number} to car management.")
+        print("\n" + "=" * 35)
+        print("Car added successfully!")
+        print(f"Plate Number : {plate_number}")
+        print(f"Brand        : {car_brand.value}")
+        print(f"Model        : {model_input}")
+        print(f"Rate / Day   : {car_rate}")
+        print("Status       : Available")
+        print("=" * 35)
+        input("Press Enter to continue...")
 
     def get_car_by_plate_number(self, plate_number):
         for car in self.cars:
@@ -55,22 +80,60 @@ class CarManager:
         return None
 
     def remove_car(self):
-        plate_number = get_non_empty_input("Enter plate number", "Input cannot be empty.")
+        print("\n" + "=" * 45)
+        print("        REMOVE CAR")
+        print("=" * 45)
+
+        plate_number = get_non_empty_input(
+            "Enter plate number of car to remove",
+            "Plate number cannot be empty."
+        ).upper()
+
         car = self.get_car_by_plate_number(plate_number)
 
         if car is None:
-            print("Car not found.")
+            print("\nCar not found.")
+            return
+
+        print("\nCAR DETAILS")
+        print("-" * 90)
+        car.display_details()
+
+        confirm = input(
+            f"\nAre you sure you want to remove this car? (Y/N): "
+        ).strip().upper()
+
+        if confirm != "Y":
+            print("\nCar removal canceled.")
             return
 
         self.cars.remove(car)
-        print(f"Successfully removed car {plate_number}.")
+
+        print("\n" + "=" * 45)
+        print(f"Car {plate_number} removed successfully.")
+        print("=" * 45)
 
     def display_cars(self):
         if len(self.cars) == 0:
             print("Car list is empty.")
             return
+
+        data = []
+
         for car in self.cars:
-            car.display_details()
+            data.append({
+                "Plate Number": car.plate_number,
+                "Brand": car.brand.value,
+                "Model": car.model,
+                "Rate / Day (₱)": car.rate_per_day,
+                "Availability": "Available" if car.availability else "Rented"
+            })
+
+        table = tabulate(data, headers="keys", tablefmt="pipe")
+        print("\nCAR LIST")
+        print(table)
+
+        input("\nPress Enter to continue...")
 
     def add_test_car(self):
         self.cars.append(Car("a", CarBrand.TOYOTA, "Vios", 1500, True))
@@ -80,106 +143,214 @@ class CarManager:
         self.cars.append(Car("DDD 444", CarBrand.NISSAN, "Terra", 2500, True))
 
     def update_car(self):
-        plate_number = get_non_empty_input("Enter plate number", "Invalid input")
+        print("\n" + "=" * 45)
+        print("        UPDATE CAR DETAILS")
+        print("=" * 45)
+
+        plate_number = get_non_empty_input(
+            "Enter plate number of car to update",
+            "Plate number cannot be empty."
+        ).upper()
+
         founded_car = self.get_car_by_plate_number(plate_number)
 
         if founded_car is None:
-            print("Car not found.")
+            print("\n Car not found.")
             return
 
+        print("\nCURRENT CAR DETAILS")
+        print("-" * 45)
         founded_car.display_details()
-        print(f"Press ENTER to keep current details of {founded_car.plate_number}.")
 
+        print("\nPress ENTER to keep the current value.")
+
+        print("\n1. Update Car Brand")
+        print("-" * 25)
         for brand in CarBrand:
-            print(f"- {brand.value}")
+            print(f"• {brand.value}")
 
-        brand_input = input(f"Enter new car brand (current: {founded_car.brand.value} ").strip().upper()
+        brand_input = input(
+            f"\nEnter new car brand (current: {founded_car.brand.value}): "
+        ).strip()
 
         if brand_input == "":
             new_brand = founded_car.brand
         else:
             new_brand = get_car_brand_from_input(brand_input)
+            if new_brand is None:
+                print("\nInvalid brand. Update canceled.")
+                return
 
+        print("\n2. Update Car Model")
+        print("-" * 25)
+        print(f"Available models for {new_brand.value}:")
+        for model in BRAND_MODELS[new_brand]:
+            print(f"• {model}")
 
-        print(f"\nAvailable Models for {new_brand.value}:")
-        for brand in BRAND_MODELS[new_brand]:
-            print(f"- {brand}")
-
-        model_input = get_non_empty_input(
-            "Enter new car model",
-            "Car model should not be blank."
+        model_input = input(
+            f"\nEnter new car model (current: {founded_car.model}): "
         ).strip().title()
 
-        if model_input in BRAND_MODELS[new_brand]:
+        if model_input == "":
+            new_model = founded_car.model
+        elif model_input in BRAND_MODELS[new_brand]:
             new_model = model_input
         else:
-            print("Invalid model for selected brand!")
+            print("\nInvalid model for selected brand.")
             return
 
-        new_rate_input = input("Enter new car rate: ").strip()
+        print("\n3. Update Rental Rate")
+        print("-" * 25)
+        rate_input = input(
+            f"Enter new rate per day (current: ₱{founded_car.rate_per_day}): "
+        ).strip()
 
-        if new_rate_input == "":
+        if rate_input == "":
             new_rate = founded_car.rate_per_day
         else:
             try:
-                new_rate = int(new_rate_input)
+                new_rate = int(rate_input)
             except ValueError:
-                print("Invalid rate. Update canceled.")
+                print("\nInvalid rate. Update canceled.")
                 return
-
 
         founded_car.brand = new_brand
         founded_car.model = new_model
         founded_car.rate_per_day = new_rate
 
-        print("Successfully updated car details.")
+        print("\n" + "=" * 90)
+        print("Car details updated successfully!")
+        print("-" * 90)
+        founded_car.display_details()
+        print("=" * 90)
+
+        input("Press Enter to continue...")
 
     def search_by_brand(self):
-        brand_input = input("Enter car brand: ").strip()
+        print("\n" + "=" * 45)
+        print("        SEARCH CARS BY BRAND")
+        print("=" * 45)
 
+        print("\nAvailable Brands:")
+        print("-" * 25)
+        for brand in CarBrand:
+            print(f"• {brand.value}")
+
+        brand_input = input("\nEnter car brand to search: ").strip()
         selected_brand = get_car_brand_from_input(brand_input)
 
         if selected_brand is None:
-            print(f"No brand {brand_input} found")
+            print(f"\nBrand '{brand_input}' not found.")
             return
 
         filtered_cars = [car for car in self.cars if car.brand == selected_brand]
-        if len(filtered_cars) == 0:
-            print(f"No cars yet in brand {brand_input}.")
+
+        if not filtered_cars:
+            print(f"\nNo cars available under brand {selected_brand.value}.")
             return
-        print(f"Found {len(filtered_cars)} car(s) in brand {brand_input}.")
+
+        data = []
         for car in filtered_cars:
-            car.display_details()
+            data.append({
+                "Plate Number": car.plate_number,
+                "Brand": car.brand.value,
+                "Model": car.model,
+                "Rate / Day (₱)": car.rate_per_day,
+                "Availability": "Available" if car.availability else "Rented"
+            })
+
+        print("\n" + "=" * 45)
+        print(f"{len(filtered_cars)} car(s) found under {selected_brand.value}")
+        print("=" * 45)
+
+        table = tabulate(data, headers="keys", tablefmt="pipe")
+        print(table)
+
+        input("Press Enter to continue...")
 
     def search_by_model(self):
-        model_input = input("Enter car model: ").strip().title()
+        print("\n" + "=" * 45)
+        print("        SEARCH CARS BY MODEL")
+        print("=" * 45)
 
-        found = False
-        for brand, models in BRAND_MODELS.items():
-            if model_input in models:
-                found = True
-                break
-        if not found:
-            print(f"No cars yet in model {model_input}.")
+        model_input = input("\nEnter car model to search: ").strip().title()
+
+        valid_models = set()
+        for models in BRAND_MODELS.values():
+            valid_models.update(models)
+
+        if model_input not in valid_models:
+            print(f"\nModel '{model_input}' does not exist.")
             return
 
         filtered_cars = [car for car in self.cars if car.model == model_input]
-        if len(filtered_cars) == 0:
-            print(f"No cars yet in model {model_input}.")
+
+        if not filtered_cars:
+            print(f"\nNo cars available under model {model_input}.")
             return
-        print(f"Found {len(filtered_cars)} car(s) in model {model_input}.")
+
+        data = []
         for car in filtered_cars:
-            car.display_details()
+            data.append({
+                "Plate Number": car.plate_number,
+                "Brand": car.brand.value,
+                "Model": car.model,
+                "Rate / Day (₱)": car.rate_per_day,
+                "Availability": "Available" if car.availability else "Rented"
+            })
+
+        print("\n" + "=" * 45)
+        print(f"{len(filtered_cars)} car(s) found under model {model_input}")
+        print("=" * 45)
+        print(tabulate(data, headers="keys", tablefmt="pipe"))
+
+        input("Press Enter to continue...")
 
     def search_by_availability(self):
+        print("\n" + "=" * 45)
+        print("        SEARCH CARS BY AVAILABILITY")
+        print("=" * 45)
+
         available_cars = [car for car in self.cars if car.is_available()]
         unavailable_cars = [car for car in self.cars if not car.is_available()]
-        print("-- Available cars --")
-        for car in available_cars:
-            car.display_details()
-        print("\n-- Unavailable cars --")
-        for car in unavailable_cars:
-            car.display_details()
+
+        print("\nAVAILABLE CARS")
+        print("-" * 45)
+
+        if not available_cars:
+            print("No available cars.")
+        else:
+            available_data = []
+            for car in available_cars:
+                available_data.append({
+                    "Plate Number": car.plate_number,
+                    "Brand": car.brand.value,
+                    "Model": car.model,
+                    "Rate / Day (₱)": car.rate_per_day,
+                    "Status": "Available"
+                })
+
+            print(tabulate(available_data, headers="keys", tablefmt="pipe"))
+
+        print("\nUNAVAILABLE (RENTED) CARS")
+        print("-" * 45)
+
+        if not unavailable_cars:
+            print("No rented cars.")
+        else:
+            unavailable_data = []
+            for car in unavailable_cars:
+                unavailable_data.append({
+                    "Plate Number": car.plate_number,
+                    "Brand": car.brand.value,
+                    "Model": car.model,
+                    "Rate / Day (₱)": car.rate_per_day,
+                    "Status": "Rented"
+                })
+
+            print(tabulate(unavailable_data, headers="keys", tablefmt="pipe"))
+
+            input("Press Enter to continue...")
 
     def save_file(self, filename):
         with open(filename, "w") as file:
@@ -189,8 +360,9 @@ class CarManager:
         print(f"Saved {len(self.cars)} car(s) to {filename}.")
 
     def load_file(self, filename):
+
         if not os.path.exists(filename):
-            print("No existing file found. Starting with an empty list.\n")
+            print(f"No existing {filename} found. Starting with an empty list.\n")
             return
 
         with open(filename, "r") as file:

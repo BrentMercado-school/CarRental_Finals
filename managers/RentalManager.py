@@ -182,7 +182,7 @@ class RentalManagement:
         self.rentals = []
 
         if not os.path.exists(filename):
-            print("No existing file found. Starting with an empty list.\n")
+            print(f"No existing {filename} found. Starting with an empty list.\n")
             return
 
         with open(filename, "r") as file:

@@ -11,7 +11,7 @@ def display_main_menu():
     print("1. Manage Cars\n2. Manage Customers\n3. Rental Transactions\n4. Reports\n5. Exit")
 
 def display_cars_menu():
-    print("--- Manage Cars ---")
+    print("\n--- Manage Cars ---")
     print("1. Add Car\n2. View All Cars\n3. Edit Car\n4. Remove Car\n5. Search Cars\n6. Save\n7. Back")
 
 def display_customer_menu():
@@ -49,7 +49,7 @@ def get_valid_integer(prompt, error_msg):
         print(f"\n{error_msg}")
 
 def search_car_prompt():
-    print("Search Cars By:")
+    print("\nSearch Cars By:")
     print("1. Brand\n2. Model\n3. Availability\n4. Back")
     return input("Enter your choice: ").strip()
 

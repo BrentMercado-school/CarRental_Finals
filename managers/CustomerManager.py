@@ -105,7 +105,7 @@ class CustomerManagement:
 
         try:
             if not os.path.exists(filename):
-                print("No existing file found. Starting with an empty list.\n")
+                print(f"No existing {filename} found. Starting with an empty list.\n")
 
             with open(filename, "r") as file:
                 for line in file:
@@ -136,7 +136,7 @@ class CustomerManagement:
             print(f"Loaded {len(self.customers)} customer(s) from {filename}.")
 
         except FileNotFoundError:
-            print(f"{filename} not found. A new file will be created on save.")
+            pass
 
     def add_temp_customer(self):
         self.customers.append(Customer(1, "Brent", 121211,
